@@ -20,3 +20,5 @@ function getLatestRepoVersion() {
   done
   echo -n "$LATEST"
 }
+
+getLatestRepoVersion() "${REPO}" "${DESIRED_VERSION}"
