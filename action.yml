@@ -1,0 +1,19 @@
+# action.yml
+name: 'get_latest_release'
+description: 'Retrieve laest release from GitHub Repo'
+inputs:
+  repo:  # GitHub Repo
+    description: 'GitHub Repo'
+    required: true
+    default: 'gamethis/get_latest_release_action'
+  major_version: # semver major version
+    description: 'Major version of latest release'
+    required: false
+outputs:
+  version: # id of output
+    description: 'latest release version of repo'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.version }}
