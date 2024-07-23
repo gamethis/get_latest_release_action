@@ -21,4 +21,6 @@ function getLatestRepoVersion() {
   echo -n "$LATEST"
 }
 
-getLatestRepoVersion() "${REPO}" "${DESIRED_VERSION}"
+VERSION=$(getLatestRepoVersion() "${REPO}" "${DESIRED_VERSION}")
+
+echo "version=${VERSION}" >> $GITHUB_OUTPUT
