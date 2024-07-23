@@ -8,7 +8,8 @@ This action gets the laest GitHub release.
 
 ## `repo`
 
-**Required** The Repository you want to get the latest version from.  Should be specified in org/repo fasion.
+**Required** The Repository you want to get the latest version from.
+Should be specified in org/repo fasion.
 IE.. `gamethis/get_latest_release_action`
 
 ## `major_version`
@@ -24,6 +25,7 @@ The latest release version of the repo targeted.
 ## Example usage
 
 - Get latest version with no constraint
+
 ```yaml
 uses: gamethis/get_latest_release_action@v1
 with:
@@ -31,9 +33,10 @@ with:
 ```
 
 - Get latest version with `major_version` contraint
+
  ```yaml
 uses: gamethis/get_latest_release_action@v1
 with:
   repo: get_latest_release_action
   major_version: 1
-``` 
+```
