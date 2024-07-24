@@ -8,6 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout source code
-      uses: gamethis/get_latest_release_action
+      uses: gamethis/get_latest_release_action@v1
       with:
         repo: get_latest_release_action
