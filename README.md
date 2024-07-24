@@ -27,7 +27,7 @@ The latest release version of the repo targeted.
 - Get latest version with no constraint
 
 ```yaml
-uses: gamethis/get_latest_release_action@v1
+uses: gamethis/get_latest_release_action
 with:
   repo: get_latest_release_action
 ```
