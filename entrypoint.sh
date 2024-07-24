@@ -8,4 +8,4 @@ if [[ -z "$GITHUB_OUTPUT" ]]; then
 else
   go run /main.go -repo_name=${REPO} -major=${DESIRED_VERSION} >> "$GITHUB_OUTPUT"
 fi
-  
+
