@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout source code
+      id: get_release
       uses: gamethis/get_latest_release_action@v1
       with:
         repo: get_latest_release_action
+    - name: Get the output time
+      run: echo "The time was ${{ steps.get_release.outputs.version }}"
