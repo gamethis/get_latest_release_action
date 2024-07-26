@@ -1,21 +1,23 @@
 package main
 
 import (
+	"cmp"
 	json "encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
-
-	"cmp"
 )
 
 var resp *http.Response
 var err error
+var digitCheck = regexp.MustCompile(`^[0-9]+$`)
 
 type Repo struct {
 	RepoName      *string
@@ -46,7 +48,9 @@ type Release struct {
 
 func (repo Repo) getReleases() []Release {
 	var releases []Release
-	resp, err = http.Get(fmt.Sprintf("https://api.github.com/repos/%s/releases", *repo.RepoName))
+	wesbsite := fmt.Sprintf("https://api.github.com/repos/%s/releases", *repo.RepoName)
+	//fmt.Println(wesbsite)
+	resp, err = http.Get(wesbsite)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,19 +68,35 @@ func (repo Repo) getReleases() []Release {
 	//fmt.Println(repo.LatestRelease.Body)
 }
 
+func (release Release) GetMajor() (major int) {
+	SemVerSplit := strings.Split(release.TagName, ".")[0]
+	majorSplit := strings.Split(SemVerSplit, "-")
+	for _, value := range majorSplit {
+		if digitCheck.MatchString(value) {
+			major, err = strconv.Atoi(value)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			break
+		}
+	}
+	return major
+}
+
 func (repo Repo) filterReleases(releases []Release) []Release {
 	var filteredReleases []Release
 	for _, release := range releases {
+
 		switch *repo.Major {
 		case "None":
 			if !release.Draft && !release.Prerelease && release.TagName != "" {
-				//fmt.Println(release.TagName)
 				filteredReleases = append(filteredReleases, release)
 			}
 		default:
-			major := strings.Split(release.TagName, ".")[0]
-			if strings.Contains(major, *repo.Major) && !release.Draft && !release.Prerelease && release.TagName != "" {
-				// fmt.Println(release.TagName)
+			major := release.GetMajor()
+			if strings.Contains(strconv.Itoa(major), *repo.Major) && !release.Draft && !release.Prerelease && release.TagName != "" {
+				//fmt.Println(release.TagName)
 				filteredReleases = append(filteredReleases, release)
 			}
 		}
@@ -88,6 +108,16 @@ func (repo Repo) filterReleases(releases []Release) []Release {
 }
 
 func (repo *Repo) getLatest(releases []Release) {
+	if *repo.Major == "None" {
+		major_list := []int{}
+		for _, release := range releases {
+			major_list = append(major_list, release.GetMajor())
+		}
+		slices.Sort(major_list)
+		majorVersion := major_list[len(major_list)-1]
+		*repo.Major = strconv.Itoa(majorVersion)
+		releases = repo.filterReleases(releases)
+	}
 	slices.SortFunc(releases, func(i, j Release) int {
 		if strings.Contains(i.TagName, "-") && strings.Contains(j.TagName, "-") {
 			return cmp.Compare(strings.Split(strings.ToLower(i.TagName), "-")[1], strings.Split(strings.ToLower(j.TagName), "-")[1]) // sort by tag name
