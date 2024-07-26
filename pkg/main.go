@@ -29,7 +29,7 @@ type Repo struct {
 	LatestRelease Release
 }
 
-// Release represents a release.
+// Release represents a GitHub release.
 type Release struct {
 	URL         string    `json:"url"`
 	AssetsURL   string    `json:"assets_url"`
