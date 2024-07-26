@@ -8,13 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: add go to path
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v5
       with:
         go-version: '1.22.5'
+    - name: validate go
+      run: | 
+        go version
+        which go
+    - name: Checkout source code
+      uses: actions/checkout@v4
+      with: 
+        repository: 'gamethis/get_latest_release_action'
     - name: Get Release
       id: get_release
-      uses: gamethis/get_latest_release_action@v1
-      with:
-        repo: get_latest_release_action
-    - name: Get the output time
-      run: echo "The time was ${{ steps.get_release.outputs.version }}"
+      run: |
+        go run main.go -repo_name=${{env.repo}} >> $GITHUB_OUTPUT
+      env:
+        repo: gamethis/bonkeywonkers
+    - name: Get the output repo version
+      run: echo "The repo latest version was ${{ steps.get_release.outputs.version }}"
