@@ -19,6 +19,7 @@ var resp *http.Response
 var err error
 var digitCheck = regexp.MustCompile(`^[0-9]+$`)
 
+// Repo represents a repository.
 type Repo struct {
 	RepoName      *string
 	Major         *string
@@ -28,6 +29,7 @@ type Repo struct {
 	LatestRelease Release
 }
 
+// Release represents a release.
 type Release struct {
 	URL         string    `json:"url"`
 	AssetsURL   string    `json:"assets_url"`
@@ -46,6 +48,7 @@ type Release struct {
 	Body        string    `json:"body"`
 }
 
+// getReleases retrieves the releases for the repository.
 func (repo Repo) getReleases() []Release {
 	var releases []Release
 	wesbsite := fmt.Sprintf("https://api.github.com/repos/%s/releases", *repo.RepoName)
@@ -68,6 +71,7 @@ func (repo Repo) getReleases() []Release {
 	//fmt.Println(repo.LatestRelease.Body)
 }
 
+// GetMajor returns the major version of the release.
 func (release Release) GetMajor() (major int) {
 	SemVerSplit := strings.Split(release.TagName, ".")[0]
 	majorSplit := strings.Split(SemVerSplit, "-")
@@ -77,17 +81,16 @@ func (release Release) GetMajor() (major int) {
 			if err != nil {
 				log.Fatal(err)
 			}
-
 			break
 		}
 	}
 	return major
 }
 
+// filterReleases filters the releases based on the major version.
 func (repo Repo) filterReleases(releases []Release) []Release {
 	var filteredReleases []Release
 	for _, release := range releases {
-
 		switch *repo.Major {
 		case "None":
 			if !release.Draft && !release.Prerelease && release.TagName != "" {
@@ -107,6 +110,7 @@ func (repo Repo) filterReleases(releases []Release) []Release {
 	return filteredReleases
 }
 
+// getLatest retrieves the latest release.
 func (repo *Repo) getLatest(releases []Release) {
 	if *repo.Major == "None" {
 		major_list := []int{}
@@ -135,8 +139,6 @@ func main() {
 	// repo.RepoName = "gamethis/bonkeywonkers"
 	//repo.RepoName = "frrouting/frr"
 	//repo.Major = "10"
-	//repo.Minor = "0"
-	//repo.Patch = "0"
 	repo.RepoName = flag.String("repo_name", "", "The name of the repository in the format of 'owner/repo'")
 	repo.Major = flag.String("major", "None", "The major version of the release")
 	repo.Minor = *flag.String("minor", "None", "The minor version of the release")
